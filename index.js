@@ -8,6 +8,12 @@ dotenv.config();
 
 const app = express();
 
+// Enable CORS
+app.use(cors());
+
+// Init Middleware
+app.use(express.json({ extended: false }));
+
 // Connect Database
 const connectDB = async () => {
   try {
@@ -15,24 +21,19 @@ const connectDB = async () => {
     console.log("MongoDB Connected...");
   } catch (err) {
     console.error(err.message);
-    // Exit process with failure
-    process.exit(1);
+    process.exit(1); // Exit process with failure
   }
 };
 connectDB();
-
-// Init Middleware
-app.use(express.json({ extended: false }));
-app.use(cors());
 
 // Define Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/tracker", require("./routes/tracking"));
+app.use("/chatbot", require("./routes/chatbot")); // ✅ Chori chatbot route added
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
-  // Set static folder
   app.use(express.static("client/build"));
 
   app.get("*", (req, res) => {
