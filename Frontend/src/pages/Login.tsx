@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,24 +13,38 @@ const Login = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Welcome back! 🌸",
-      description: "You've successfully logged in to CHORI.",
-    });
-    navigate('/dashboard');
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData
+      );
+      localStorage.setItem("token", res.data.token);
+      toast({
+        title: "Welcome back! 🌸",
+        description: "You've successfully logged in to CHORI.",
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast({
+        title: "Login Failed",
+        description:
+          err.response?.data?.message || "An error occurred during login.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-teal-50 flex items-center justify-center px-6">
       <div className="w-full max-w-md">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/")}
           className="mb-6 text-rose-700 hover:bg-rose-50"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -47,37 +61,47 @@ const Login = () => {
                 CHORI
               </span>
             </div>
-            <CardTitle className="text-2xl text-gray-800">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl text-gray-800">
+              Welcome Back
+            </CardTitle>
             <p className="text-gray-600">Log in to track your cycle</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Email</Label>
+                <Label htmlFor="email" className="text-gray-700">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="border-rose-200 focus:border-rose-400"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="border-rose-200 focus:border-rose-400"
                   required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-gradient-to-r from-rose-500 to-purple-500 hover:from-rose-600 hover:to-purple-600 text-white font-semibold py-2"
               >
                 Log In to Track Your Cycle
@@ -86,8 +110,8 @@ const Login = () => {
             <div className="text-center pt-4">
               <p className="text-gray-600">
                 Don't have an account?{" "}
-                <button 
-                  onClick={() => navigate('/signup')}
+                <button
+                  onClick={() => navigate("/signup")}
                   className="text-rose-600 hover:text-rose-700 font-semibold"
                 >
                   Sign Up

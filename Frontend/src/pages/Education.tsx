@@ -1,42 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, ArrowLeft, Play, Award, Heart, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 const Education = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+
   const [completedVideos, setCompletedVideos] = useState<string[]>([]);
   const [currentlyWatching, setCurrentlyWatching] = useState<string | null>(null);
 
-  const videoSections = [
-    {
-      title: "Getting Started",
-      videos: [
-        { id: "1", title: "What is Menstruation?", duration: "0:48", description: "A gentle introduction to periods and what they mean", url: "https://www.youtube.com/watch?v=zcvo9VLVHWc" },
-        { id: "2", title: "Your First Period", duration: "2:30", description: "What to expect and how to prepare", url: "https://www.youtube.com/watch?v=SqnZnA3BpPY" },
-        { id: "3", title: "Period Products Explained", duration: "2:48", description: "Pads, tampons, cups - what works for you?", url: "https://www.youtube.com/watch?v=UfK17D0eX5I" },
-      ]
-    },
-    {
-      title: "Managing Your Period",
-      videos: [
-        { id: "4", title: "Hygiene During Your Period", duration: "1:38", description: "Stay clean and comfortable", url: "https://www.youtube.com/watch?v=qFLElwY-SYE" },
-        { id: "5", title: "Dealing with Cramps", duration: "1:44", description: "Natural ways to manage period pain", url: "https://www.youtube.com/watch?v=E1BGQoVaynU" },
-        { id: "6", title: "Period Emergencies", duration: "5:36", description: "What to do when caught unprepared", url: "https://www.youtube.com/watch?v=PeL_XtBrOxw" },
-      ]
-    },
-    {
-      title: "Understanding Your Body",
-      videos: [
-        { id: "7", title: "Your Mensurational Cycle Explained", duration: "9:42", description: "The four phases of your cycle", url: "https://www.youtube.com/watch?v=3Lt9I5LrWZw" },
-        { id: "8", title: "Tracking Your Period", duration: "4:09", description: "Why and how to track your cycle", url: "https://www.youtube.com/watch?v=W8uh0_btzOg" },
-        { id: "9", title: "When to See a Doctor", duration: "2:55", description: "Signs that need medical attention", url: "https://www.youtube.com/watch?v=m_QWSwqvTXE" },
-      ]
+useEffect(() => {
+  const fetchProgress = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const res = await axios.get("http://localhost:5000/api/users/video-progress", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const videoProgress = res.data.videoProgress || {};
+      const completed = Object.keys(videoProgress).filter((key) => videoProgress[key] === true);
+      setCompletedVideos(completed);
+    } catch (err) {
+      console.error("Failed to load progress", err);
     }
-  ];
+  };
+  fetchProgress();
+}, []);
+
+
+ const markComplete = async (videoId: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    await axios.put("http://localhost:5000/api/users/video-progress", {
+      videoId,
+      completed: true,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setCompletedVideos((prev) => [...prev, videoId]);
+  } catch (err) {
+    console.error("Error saving progress", err);
+  }
+};
+
 
   const startWatching = (videoId: string, videoTitle: string, url?: string) => {
     setCurrentlyWatching(videoId);
@@ -46,14 +57,14 @@ const Education = () => {
     });
 
     setTimeout(() => {
-      if (url) window.open(url, '_blank');
+      if (url) window.open(url, "_blank");
       finishVideo(videoId, videoTitle);
     }, 1000);
   };
 
   const finishVideo = (videoId: string, videoTitle: string) => {
     if (!completedVideos.includes(videoId)) {
-      setCompletedVideos([...completedVideos, videoId]);
+      markComplete(videoId);
       toast({
         title: "Video Completed! 🎉",
         description: `Great job! You've completed "${videoTitle}". Keep learning!`,
@@ -62,6 +73,87 @@ const Education = () => {
     setCurrentlyWatching(null);
   };
 
+  const videoSections = [
+    {
+      title: "Getting Started",
+      videos: [
+        {
+          id: "1",
+          title: "What is Menstruation?",
+          duration: "0:48",
+          description: "A gentle introduction to periods and what they mean",
+          url: "https://www.youtube.com/watch?v=zcvo9VLVHWc",
+        },
+        {
+          id: "2",
+          title: "Your First Period",
+          duration: "2:30",
+          description: "What to expect and how to prepare",
+          url: "https://www.youtube.com/watch?v=SqnZnA3BpPY",
+        },
+        {
+          id: "3",
+          title: "Period Products Explained",
+          duration: "2:48",
+          description: "Pads, tampons, cups - what works for you?",
+          url: "https://www.youtube.com/watch?v=UfK17D0eX5I",
+        },
+      ],
+    },
+    {
+      title: "Managing Your Period",
+      videos: [
+        {
+          id: "4",
+          title: "Hygiene During Your Period",
+          duration: "1:38",
+          description: "Stay clean and comfortable",
+          url: "https://www.youtube.com/watch?v=qFLElwY-SYE",
+        },
+        {
+          id: "5",
+          title: "Dealing with Cramps",
+          duration: "1:44",
+          description: "Natural ways to manage period pain",
+          url: "https://www.youtube.com/watch?v=E1BGQoVaynU",
+        },
+        {
+          id: "6",
+          title: "Period Emergencies",
+          duration: "5:36",
+          description: "What to do when caught unprepared",
+          url: "https://www.youtube.com/watch?v=PeL_XtBrOxw",
+        },
+      ],
+    },
+    {
+      title: "Understanding Your Body",
+      videos: [
+        {
+          id: "7",
+          title: "Your Menstrual Cycle Explained",
+          duration: "9:42",
+          description: "The four phases of your cycle",
+          url: "https://www.youtube.com/watch?v=3Lt9I5LrWZw",
+        },
+        {
+          id: "8",
+          title: "Tracking Your Period",
+          duration: "4:09",
+          description: "Why and how to track your cycle",
+          url: "https://www.youtube.com/watch?v=W8uh0_btzOg",
+        },
+        {
+          id: "9",
+          title: "When to See a Doctor",
+          duration: "2:55",
+          description: "Signs that need medical attention",
+          url: "https://www.youtube.com/watch?v=m_QWSwqvTXE",
+        },
+      ],
+    },
+  ];
+
   const totalVideos = videoSections.reduce((acc, section) => acc + section.videos.length, 0);
   const progressPercentage = (completedVideos.length / totalVideos) * 100;
 
@@ -69,8 +161,9 @@ const Education = () => {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-teal-50">
       <header className="px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-rose-100">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-rose-700 hover:bg-rose-50">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+          <Button variant="ghost" onClick={() => navigate("/dashboard")} className="text-rose-700 hover:bg-rose-50">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
           </Button>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-purple-400 rounded-full flex items-center justify-center">
@@ -151,12 +244,15 @@ const Education = () => {
                               ? "bg-blue-500 hover:bg-blue-600"
                               : "bg-gradient-to-r from-rose-500 to-purple-500 hover:from-rose-600 hover:to-purple-600"
                           }`}
-                          onClick={() => {
-                            if (!completedVideos.includes(video.id) && currentlyWatching !== video.id) {
-                              startWatching(video.id, video.title, video.url);
-                            }
-                          }}
-                          disabled={completedVideos.includes(video.id) || currentlyWatching === video.id}
+                          onClick={() =>
+                            !completedVideos.includes(video.id) &&
+                            currentlyWatching !== video.id &&
+                            startWatching(video.id, video.title, video.url)
+                          }
+                          disabled={
+                            completedVideos.includes(video.id) ||
+                            currentlyWatching === video.id
+                          }
                         >
                           {completedVideos.includes(video.id)
                             ? "Completed ✓"
@@ -178,7 +274,8 @@ const Education = () => {
             <Heart className="w-8 h-8 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">You're Doing Amazing! 🌸</h3>
             <p className="opacity-95">
-              Learning about your body is a powerful step towards health and confidence. Take your time, and remember - every question is a good question!
+              Learning about your body is a powerful step towards health and confidence.
+              Take your time, and remember - every question is a good question!
             </p>
           </CardContent>
         </Card>
