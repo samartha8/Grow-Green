@@ -60,7 +60,7 @@ Science and tradition-backed tips to ease symptoms and build energy.
 1. **Signup/Login** – Secure login with onboarding Q: “When was your last period?”
 2. **Dashboard** – Personalized greeting, stats, and quick-access widgets
 3. **Tracking** – Log flow, pain, energy, emotions; get health feedback
-4. **Profile** – Saved tips, privacy settings, streak achievements
+4. **Profile** – Privacy settings, Change of period cycle
 5. **Learn & Grow** – Explore educational resources and diet suggestions
 
 ---
@@ -142,25 +142,99 @@ npm run dev
 ## 📂 Project Structure
 
 ```
-📦 CHORI/
+CHORI/
 ├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
 │   ├── index.js
-│   ├── .env
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   ├── public/
-│   ├── tailwind.config.ts
-│   ├── vite.config.ts
-│   └── package.json
+│   ├── .env                    # Mongo URI & JWT secret
+│   ├── package.json
+│   ├── package-lock.json
+│   │
+│   ├── routes/                 # Express routes
+│   │   ├── auth.js
+│   │   ├── users.js
+│   │   ├── tracking.js
+│   │   └── chatbot.js
+│   │
+│   ├── controllers/            # Business logic
+│   │   ├── authController.js
+│   │   ├── userController.js
+│   │   ├── trackingController.js
+│   │   └── chatbotController.js
+│   │
+│   ├── middleware/             # JWT protection
+│   │   └── auth.js
+│   │
+│   └── models/                 # Mongoose schemas
+│       ├── User.js
+│       └── DailyTracking.js
+│
+└── frontend/
+    ├── .env
+    ├── index.html
+    ├── package.json
+    ├── package-lock.json
+    ├── components.json         # shadcn/ui config
+    ├── postcss.config.js
+    ├── tailwind.config.ts
+    ├── vite.config.ts
+    ├── tsconfig.json
+    ├── tsconfig.app.json
+    ├── tsconfig.node.json
+    ├── eslint.config.js
+    ├── vite-env.d.ts
+    │
+    └── src/
+        ├── main.tsx
+        ├── App.tsx
+        ├── App.css
+        ├── index.css
+        │
+        ├── hooks/
+        │   └── use-toast.ts
+        │
+        ├── lib/
+        │   └── utils.ts
+        │
+        ├── pages/              # All main screens
+        │   ├── Index.tsx
+        │   ├── Login.tsx
+        │   ├── SignUp.tsx
+        │   ├── Onboarding.tsx
+        │   ├── Dashboard.tsx
+        │   ├── Tracker.tsx
+        │   ├── Profile.tsx
+        │   ├── Chatbot.tsx
+        │   ├── Education.tsx
+        │   ├── DietTips.tsx
+        │   └── WellnessStreaks.tsx
+        │
+        └── components/
+            └── ui/             # ShadCN + Radix UI components
+                ├── according.tsx
+                ├── alert.tsx
+                ├── alert-dialog.tsx
+                ├── aspect-ratio.tsx
+                ├── avatar.tsx
+                ├── badge.tsx
+                ├── breadcrumb.tsx
+                ├── button.tsx
+                ├── calendar.tsx
+                ├── card.tsx
+                ├── carousel.tsx
+                ├── chat.tsx
+                ├── chatbox.tsx
+                ├── collapsible.tsx
+                ├── commands.tsx
+                ├── context-menu.tsx
+                ├── dialog.tsx
+                ├── input.tsx
+                ├── label.tsx
+                ├── navigation-menu.tsx
+                ├── sonner.tsx
+                ├── toast.tsx
+                ├── toaster.tsx
+                └── tooltip.tsx
+
 ```
 
 ---
