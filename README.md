@@ -44,9 +44,6 @@ Beginner-friendly, culturally respectful content around body literacy and stigma
 ### 🥗 Strength-Building Diet Tips
 Science and tradition-backed tips to ease symptoms and build energy.
 
-### 🌟 Gamified Wellness Streaks
-Badges like “Hydration Hero”, “Strong Cycle Warrior”, “5-Day Tracker Streak” to encourage habit-forming.
-
 
 ---
 
